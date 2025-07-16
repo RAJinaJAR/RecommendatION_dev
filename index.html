@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ION CTRM Recommendation Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'ion-blue': '#0033A0',
+              'ion-blue-dark': '#002269',
+              'ion-gray': {
+                'light': '#F0F2F5',
+                'medium': '#D9DDE1',
+                'dark': '#6C757D'
+              },
+            },
+            animation: {
+              'slide-in': 'slide-in 0.5s ease-in-out forwards',
+              'slide-out': 'slide-out 0.5s ease-in-out forwards',
+              'fade-in': 'fade-in 0.5s ease-in-out forwards',
+              'bounce': 'bounce 1s infinite',
+            },
+            keyframes: {
+              'slide-in': {
+                '0%': { transform: 'translateX(100%)', opacity: 0 },
+                '100%': { transform: 'translateX(0)', opacity: 1 },
+              },
+              'slide-out': {
+                '0%': { transform: 'translateX(0)', opacity: 1 },
+                '100%': { transform: 'translateX(-100%)', opacity: 0 },
+              },
+              'fade-in': {
+                '0%': { opacity: 0 },
+                '100%': { opacity: 1 },
+              },
+            }
+          }
+        }
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/",
+    "react": "https://esm.sh/react@^19.1.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.8.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

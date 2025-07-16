@@ -1,0 +1,6 @@
+{
+  "name": "ION CTRM Recommendation Agent",
+  "description": "An intelligent questionnaire to guide potential clients toward the most suitable CTRM platform offered by ION Group, using Gemini for personalized recommendations.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
