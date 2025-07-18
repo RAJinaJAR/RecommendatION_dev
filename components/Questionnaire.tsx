@@ -17,6 +17,7 @@ const initialAnswers: UserAnswers = {
   tradingType: null,
   orgSize: null,
   currentSystem: null,
+  technologyPreference: null,
   priorities: [],
   region: null,
   integrations: [],
@@ -26,6 +27,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<UserAnswers>(initialAnswers);
   const [animationClass, setAnimationClass] = useState('animate-slide-in');
+  const [otherTechnology, setOtherTechnology] = useState('');
 
   const currentQuestion: Question = QUESTIONS[currentStep];
 
@@ -37,13 +39,19 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
         setAnimationClass('animate-slide-in');
       }, 500);
     } else {
-      onComplete(answers);
+      const finalAnswers = { ...answers };
+      if (finalAnswers.technologyPreference === 'Other') {
+        finalAnswers.technologyPreference = otherTechnology;
+      }
+      onComplete(finalAnswers);
     }
   };
 
   const handleSelect = (option: string) => {
     setAnswers({ ...answers, [currentQuestion.id]: option });
-    setTimeout(handleNext, 300);
+     if (!(currentQuestion.id === 'technologyPreference' && option === 'Other')) {
+        setTimeout(handleNext, 300);
+    }
   };
 
   const handleMultiSelect = (option: string) => {
@@ -65,6 +73,10 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
   const isNextDisabled = (): boolean => {
     const value = answers[currentQuestion.id];
     
+    if (currentQuestion.id === 'technologyPreference' && value === 'Other') {
+        return otherTechnology.trim() === '';
+    }
+
     switch (currentQuestion.type) {
         case 'multiselect':
             return (value as string[]).length === 0;
@@ -83,16 +95,35 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
   
   const renderInput = () => {
     switch (currentQuestion.type) {
-      case 'select':
+      case 'select': {
+        const selectedValue = answers[currentQuestion.id];
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             {currentQuestion.options?.map(option => (
-              <button key={option} onClick={() => handleSelect(option)} className="w-full p-4 text-left border-2 border-ion-gray-medium rounded-lg hover:border-ion-blue hover:bg-ion-blue/10 focus:outline-none focus:ring-2 focus:ring-ion-blue transition-all duration-200">
-                {option}
+              <button 
+                key={option} 
+                onClick={() => handleSelect(option)} 
+                className={`w-full p-4 text-left border-2 rounded-lg transition-all duration-200 ${selectedValue === option ? 'bg-ion-blue text-white border-ion-blue' : 'border-ion-gray-medium hover:border-ion-blue hover:bg-ion-blue/10 focus:outline-none focus:ring-2 focus:ring-ion-blue'}`}
+              >
+                {currentQuestion.id === 'technologyPreference' && option === 'Other' ? 'Other (please specify)' : option}
               </button>
             ))}
+            {currentQuestion.id === 'technologyPreference' && selectedValue === 'Other' && (
+              <div className="md:col-span-2 mt-2 animate-fade-in">
+                  <input
+                      type="text"
+                      value={otherTechnology}
+                      onChange={(e) => setOtherTechnology(e.target.value)}
+                      placeholder="Your preferred platform"
+                      className="w-full p-4 border-2 border-ion-gray-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-ion-blue"
+                      aria-label="Other technology preference"
+                      autoFocus
+                  />
+              </div>
+            )}
           </div>
         );
+      }
       case 'multiselect':
         const selectedOptions = (answers[currentQuestion.id] as string[]) || [];
         return (
@@ -157,7 +188,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
             {renderInput()}
         </div>
         <div className="mt-8 flex justify-end">
-            {(currentQuestion.type === 'multiselect' || currentQuestion.type === 'number' || currentQuestion.type === 'budget-range') && (
+            {(currentQuestion.type === 'multiselect' || currentQuestion.type === 'number' || currentQuestion.type === 'budget-range' || (currentQuestion.id === 'technologyPreference' && answers.technologyPreference === 'Other')) && (
                 <ActionButton onClick={handleNext} disabled={isNextDisabled()}>
                     {currentStep === QUESTIONS.length - 1 ? 'Get Recommendation' : 'Next'}
                 </ActionButton>

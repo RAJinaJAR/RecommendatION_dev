@@ -28,6 +28,7 @@ const RANKABLE_FACTORS: RankableFactor[] = [
     { id: 'priorities', label: 'Key Business Priorities (Trading, Risk, etc.)' },
     { id: 'expectedBudget', label: 'Annual Budget' },
     { id: 'goLiveTimeline', label: 'Go-Live Timeline' },
+    { id: 'technologyPreference', label: 'Technology Platform Preference' },
     { id: 'users', label: 'Number of Users' },
     { id: 'tradingType', label: 'Trading Style (Physical vs. Financial)' },
     { id: 'integrations', label: 'System Integration Needs' },
