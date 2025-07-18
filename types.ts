@@ -8,6 +8,8 @@ export type Integration = "ERP" | "Risk Engines" | "Market Data Feeds" | "None" 
 
 export type TimelineRange = "Within 3 months" | "3-6 months" | "6-12 months" | "12+ months";
 
+export type TechnologyPreference = "SaaS" | "Server - On-prem" | "Cloud" | "No Preference" | "Other";
+
 export interface Budget {
   min: number | null;
   max: number | null;
@@ -21,6 +23,7 @@ export interface UserAnswers {
   tradingType: TradingType | null;
   orgSize: OrgSize | null;
   currentSystem: CurrentSystem | null;
+  technologyPreference: string | null;
   priorities: Priority[];
   region: Region | null;
   integrations: Integration[];
