@@ -1,12 +1,11 @@
-
 import React, { useState } from 'react';
 import { LandingPage } from './components/LandingPage';
 import { Questionnaire } from './components/Questionnaire';
 import { RecommendationPage } from './components/RecommendationPage';
 import { UserAnswers } from './types';
-
+ 
 type AppState = 'landing' | 'questionnaire' | 'recommendation';
-
+ 
 const ShareModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
   <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex justify-center items-center p-4 animate-fade-in" aria-modal="true" role="dialog">
     <div className="bg-white rounded-xl shadow-2xl p-6 md:p-8 max-w-2xl w-full transform transition-all">
@@ -42,27 +41,27 @@ const ShareModal: React.FC<{ onClose: () => void }> = ({ onClose }) => (
     </div>
   </div>
 );
-
-
+ 
+ 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>('landing');
   const [answers, setAnswers] = useState<UserAnswers | null>(null);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-
+ 
   const handleStart = () => {
     setAppState('questionnaire');
   };
-
+ 
   const handleComplete = (finalAnswers: UserAnswers) => {
     setAnswers(finalAnswers);
     setAppState('recommendation');
   };
-
+ 
   const handleRestart = () => {
     setAnswers(null);
     setAppState('landing');
   };
-
+ 
   const renderContent = () => {
     switch (appState) {
       case 'landing':
@@ -75,7 +74,7 @@ const App: React.FC = () => {
         return <LandingPage onStart={handleStart} />;
     }
   };
-
+ 
   return (
     <main className="min-h-screen bg-white font-sans">
        <header className="absolute top-0 left-0 right-0 p-4 sm:p-6 flex justify-between items-center z-10">
@@ -90,5 +89,5 @@ const App: React.FC = () => {
     </main>
   );
 };
-
+ 
 export default App;
