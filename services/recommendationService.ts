@@ -1,6 +1,6 @@
 import { UserAnswers, Product } from '../types';
 import { PRODUCTS } from '../constants';
-
+ 
 export const getRecommendations = (answers: UserAnswers): { ideal: Product, strong: Product } => {
     const scores: { [key: string]: number } = {
         aspect: 0,
@@ -9,7 +9,7 @@ export const getRecommendations = (answers: UserAnswers): { ideal: Product, stro
         openlink: 0,
         allegro: 0,
     };
-
+ 
     // Rule 1: Organization Size - Every product is rated for each size.
     switch (answers.orgSize) {
         case 'Small/Startup':
@@ -34,7 +34,7 @@ export const getRecommendations = (answers: UserAnswers): { ideal: Product, stro
             scores.openlink += 3;    // Ideal fit
             break;
     }
-
+ 
     // Rule 2: Industry - Every product is rated for each industry.
     switch (answers.industry) {
         case 'Metals':
@@ -74,7 +74,7 @@ export const getRecommendations = (answers: UserAnswers): { ideal: Product, stro
             scores.openlink += 3;    // Ideal fit for complex trading
             break;
     }
-
+ 
     // Rule 3: Priorities - Every product is rated for each priority.
     answers.priorities.forEach(priority => {
         switch (priority) {
@@ -136,7 +136,7 @@ export const getRecommendations = (answers: UserAnswers): { ideal: Product, stro
                 break;
         }
     });
-
+ 
     // Rule 4: Trading Type - Every product is rated for each type.
     switch (answers.tradingType) {
         case 'Physical':
@@ -161,7 +161,7 @@ export const getRecommendations = (answers: UserAnswers): { ideal: Product, stro
             scores.openlink += 2;    // Good fit
             break;
     }
-
+ 
     // Rule 5: User Count - Using ranges for more granular scoring.
     if (answers.users <= 20) {
         scores.aspect += 2;
@@ -188,7 +188,7 @@ export const getRecommendations = (answers: UserAnswers): { ideal: Product, stro
         scores.openlink += 3;
         scores.triplepoint += 3;
     }
-
+ 
     // Rule 6: Current System - Every product is rated.
     switch (answers.currentSystem) {
         case 'Manual/Spreadsheets':
@@ -220,7 +220,7 @@ export const getRecommendations = (answers: UserAnswers): { ideal: Product, stro
             scores.openlink += 2;    // Handles complex migrations
             break;
     }
-    
+   
     // Rule 7: Budget - Using average budget for scoring.
     const { min, max } = answers.expectedBudget;
     let avgBudget = 0;
@@ -229,7 +229,7 @@ export const getRecommendations = (answers: UserAnswers): { ideal: Product, stro
     } else {
         avgBudget = min || max || 0;
     }
-
+ 
     if (avgBudget > 0) {
         if (avgBudget < 50000) {
             scores.aspect += 3;
@@ -263,7 +263,7 @@ export const getRecommendations = (answers: UserAnswers): { ideal: Product, stro
             scores.triplepoint += 4; // Ideal fit for large budgets
         }
     }
-
+ 
     // Rule 8: Go-Live Timeline - Every product is rated.
     switch (answers.goLiveTimeline) {
         case "Within 3 months":
@@ -295,14 +295,47 @@ export const getRecommendations = (answers: UserAnswers): { ideal: Product, stro
             scores.triplepoint += 2; // Suited for long-term implementation
             break;
     }
-
+ 
+    // Rule 9: Technology Preference
+    switch (answers.technologyPreference) {
+        case "SaaS":
+            scores.aspect += 3;
+            scores.allegro += 1;
+            scores.triplepoint -= 1;
+            scores.openlink -= 1;
+            break;
+        case "Cloud":
+            scores.aspect += 2;
+            scores.rightangle += 1;
+            scores.allegro += 2;
+            scores.triplepoint += 1;
+            scores.openlink += 1;
+            break;
+        case "Server - On-prem":
+            scores.aspect -= 2;
+            scores.rightangle += 2;
+            scores.allegro += 1;
+            scores.triplepoint += 2;
+            scores.openlink += 2;
+            break;
+        case "No Preference":
+            break;
+    }
+ 
     const sortedProducts = Object.entries(scores).sort(([, a], [, b]) => b - a);
-
+ 
     const idealId = sortedProducts[0][0];
     const strongId = sortedProducts[1][0];
-
+   
     const idealProduct = PRODUCTS.find(p => p.id === idealId) || PRODUCTS[0];
     const strongProduct = PRODUCTS.find(p => p.id === strongId) || PRODUCTS[1];
-
+ 
+    // Ensure ideal and strong products are not the same
+    if (idealProduct.id === strongProduct.id) {
+       const nextBestId = sortedProducts[2][0];
+       const nextBestProduct = PRODUCTS.find(p => p.id === nextBestId) || PRODUCTS[2];
+       return { ideal: idealProduct, strong: nextBestProduct };
+    }
+   
     return { ideal: idealProduct, strong: strongProduct };
 };
