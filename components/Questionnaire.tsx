@@ -4,11 +4,11 @@ import { QUESTIONS } from '../constants';
 import { ProgressBar } from './common/ProgressBar';
 import { ActionButton } from './common/ActionButton';
 import { RangeSlider } from './common/RangeSlider';
-
+ 
 interface QuestionnaireProps {
   onComplete: (answers: UserAnswers) => void;
 }
-
+ 
 const initialAnswers: UserAnswers = {
   industry: null,
   users: 50,
@@ -22,15 +22,15 @@ const initialAnswers: UserAnswers = {
   region: null,
   integrations: [],
 };
-
+ 
 export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<UserAnswers>(initialAnswers);
   const [animationClass, setAnimationClass] = useState('animate-slide-in');
   const [otherTechnology, setOtherTechnology] = useState('');
-
+ 
   const currentQuestion: Question = QUESTIONS[currentStep];
-
+ 
   const handleNext = () => {
     if (currentStep < QUESTIONS.length - 1) {
       setAnimationClass('animate-slide-out');
@@ -46,14 +46,24 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
       onComplete(finalAnswers);
     }
   };
-
+ 
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setAnimationClass('animate-slide-out-reverse');
+      setTimeout(() => {
+        setCurrentStep(currentStep - 1);
+        setAnimationClass('animate-slide-in-reverse');
+      }, 500);
+    }
+  };
+ 
   const handleSelect = (option: string) => {
     setAnswers({ ...answers, [currentQuestion.id]: option });
      if (!(currentQuestion.id === 'technologyPreference' && option === 'Other')) {
         setTimeout(handleNext, 300);
     }
   };
-
+ 
   const handleMultiSelect = (option: string) => {
     const currentValues = (answers[currentQuestion.id] as string[]) || [];
     const newValues = currentValues.includes(option)
@@ -61,22 +71,22 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
       : [...currentValues, option];
     setAnswers({ ...answers, [currentQuestion.id]: newValues });
   };
-  
+ 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAnswers({ ...answers, users: parseInt(e.target.value, 10) || 0 });
   };
-
+ 
   const handleBudgetChange = useCallback((newBudget: Budget) => {
     setAnswers(prev => ({ ...prev, expectedBudget: newBudget }));
   }, []);
-
+ 
   const isNextDisabled = (): boolean => {
     const value = answers[currentQuestion.id];
-    
+   
     if (currentQuestion.id === 'technologyPreference' && value === 'Other') {
         return otherTechnology.trim() === '';
     }
-
+ 
     switch (currentQuestion.type) {
         case 'multiselect':
             return (value as string[]).length === 0;
@@ -92,7 +102,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
             return false;
     }
   };
-  
+ 
   const renderInput = () => {
     switch (currentQuestion.type) {
       case 'select': {
@@ -100,9 +110,9 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
         return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
             {currentQuestion.options?.map(option => (
-              <button 
-                key={option} 
-                onClick={() => handleSelect(option)} 
+              <button
+                key={option}
+                onClick={() => handleSelect(option)}
                 className={`w-full p-4 text-left border-2 rounded-lg transition-all duration-200 ${selectedValue === option ? 'bg-ion-blue text-white border-ion-blue' : 'border-ion-gray-medium hover:border-ion-blue hover:bg-ion-blue/10 focus:outline-none focus:ring-2 focus:ring-ion-blue'}`}
               >
                 {currentQuestion.id === 'technologyPreference' && option === 'Other' ? 'Other (please specify)' : option}
@@ -175,7 +185,7 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
         return null;
     }
   };
-
+ 
   return (
     <div className="flex flex-col justify-center items-center h-screen p-4 sm:p-8 bg-white">
       <div className="w-full max-w-2xl bg-white p-8 rounded-xl shadow-lg">
@@ -187,10 +197,18 @@ export const Questionnaire: React.FC<QuestionnaireProps> = ({ onComplete }) => {
             </div>
             {renderInput()}
         </div>
-        <div className="mt-8 flex justify-end">
+        <div className="mt-8 flex justify-between items-center">
+            <button
+                onClick={handleBack}
+                disabled={currentStep === 0}
+                className="px-6 py-2 text-lg font-semibold text-ion-gray-dark hover:text-ion-blue disabled:text-ion-gray-medium disabled:cursor-not-allowed transition-colors"
+                aria-label="Go to previous question"
+            >
+                &larr; Back
+            </button>
             {(currentQuestion.type === 'multiselect' || currentQuestion.type === 'number' || currentQuestion.type === 'budget-range' || (currentQuestion.id === 'technologyPreference' && answers.technologyPreference === 'Other')) && (
                 <ActionButton onClick={handleNext} disabled={isNextDisabled()}>
-                    {currentStep === QUESTIONS.length - 1 ? 'Get Recommendation' : 'Next'}
+                    {currentStep === QUESTIONS.length - 1 ? 'Get Recommendations' : 'Next'}
                 </ActionButton>
             )}
         </div>
