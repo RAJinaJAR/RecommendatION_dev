@@ -90,7 +90,7 @@ import { UserAnswers, Product, Feedback, LeadDetails } from '../types';
  
 // ***************************************************************************************
 // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzTj0ylZwxrNcROkHDORSUfwIwCci_ldoxq5G0ejdRFpt6LMGiti7niRc5-BWJhtGWLfA/exec%27; // <-- e.g., 'https://script.google.com/macros/s/...'
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzTj0ylZwxrNcROkHDORSUfwIwCci_ldoxq5G0ejdRFpt6LMGiti7niRc5-BWJhtGWLfA/exec%27;'
 // ***************************************************************************************
  
  
